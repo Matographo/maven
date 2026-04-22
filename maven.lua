@@ -351,3 +351,19 @@ function plugin.info(name)
         description = path_exists(repoPath) and ("Installed locally at " .. repoPath) or "Not present in local Maven repository"
     }
 end
+
+function plugin.getMissingPackages(packages)
+    local missing = {}
+    for _, pkg in ipairs(packages or {}) do
+        local artifact, err = artifact_from_pkg(pkg)
+        if artifact == nil then
+            print("[Lua: Maven] Fehler: " .. err)
+            table.insert(missing, pkg)
+        elseif not path_exists(artifact_repo_path(artifact)) then
+            table.insert(missing, pkg)
+        end
+    end
+
+    return missing
+end
+
